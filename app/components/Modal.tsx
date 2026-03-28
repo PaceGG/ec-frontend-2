@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { useGameNamesForm } from "../hooks/useGameNamesForm";
 import { InputItem, useInputs } from "../hooks/useInputs";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 
 interface ModalProps {
@@ -46,6 +46,7 @@ const GameInput = memo(
           label={`Game ${index + 1}`}
           name="Game name"
           required
+          autoFocus
           onChange={handleChange}
         />
         <Button onClick={() => removeInput(input.id)} color="error">
@@ -75,8 +76,25 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
     onClose();
   }, [gameNames, onClose]);
 
+  const handleMainGameKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (!inputs.inputs.length) {
+        addInput();
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        gameNames.mainGameNameRef.current?.focus();
+      }, 100);
+    }
+  }, [isOpen]);
+
   return (
-    <Dialog open={isOpen} onClose={onClose}>
+    <Dialog open={isOpen} onClose={onClose} autoFocus>
       <DialogTitle>
         Add Game
         <IconButton onClick={onClose}>
@@ -92,11 +110,13 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
         <DialogContent>
           <Box p={1}>
             <TextField
+              inputRef={gameNames.mainGameNameRef}
               value={gameNames.mainGameName}
               label={!inputs.inputs.length ? "Game name" : "Game series"}
               name="Game name"
               required
               onChange={(e) => gameNames.setMainGameName(e.target.value)}
+              onKeyDown={handleMainGameKeyDown}
             />
             {inputs.inputs.map((input, index) => (
               <GameInput

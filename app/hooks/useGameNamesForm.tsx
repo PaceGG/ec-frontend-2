@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { InputItem } from "./useInputs";
 import ec from "../api";
 
 export function useGameNamesForm(inputs: InputItem[], resetInputs: () => void) {
   const [mainGameName, setMainGameName] = useState("");
+  const mainGameNameRef = useRef<HTMLInputElement>(null);
 
   const reset = () => {
     setMainGameName("");
@@ -25,6 +26,7 @@ export function useGameNamesForm(inputs: InputItem[], resetInputs: () => void) {
 
   return {
     mainGameName,
+    mainGameNameRef,
     setMainGameName,
     reset,
     submit,

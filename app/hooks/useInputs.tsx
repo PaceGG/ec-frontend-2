@@ -31,6 +31,13 @@ export function useInputs() {
     );
   };
 
+  const focus = (id: number) => {
+    const inputElement = inputRefs.current.get(id);
+    if (inputElement) {
+      inputElement.focus();
+    }
+  };
+
   const reset = () => {
     setInputs([]);
     nextId.current = 1;
@@ -42,6 +49,7 @@ export function useInputs() {
     addInput,
     removeInput,
     updateValue,
+    focus,
     inputRefs,
     reset,
   };
