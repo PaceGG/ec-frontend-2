@@ -52,11 +52,27 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
           <Box p={1}>
             <TextField
               value={gameNames.mainGameName}
-              label={!inputs.inputs.length ? "Game" : "Game series"}
-              name="Game"
+              label={!inputs.inputs.length ? "Game name" : "Game series"}
+              name="Game name"
               required
               onChange={(e) => gameNames.setMainGameName(e.target.value)}
             />
+            {inputs.inputs.map((input, index) => (
+              <Box>
+                <TextField
+                  key={`game-name-${input.id}`}
+                  value={input.value}
+                  label={`Game ${index + 1}`}
+                  name="Game name"
+                  required
+                  onChange={(e) => inputs.updateValue(input.id, e.target.value)}
+                />
+                <Button onClick={() => inputs.removeInput(input.id)}>
+                  del
+                </Button>
+              </Box>
+            ))}
+            <Button onClick={inputs.addInput}>+ ADD GAME</Button>
           </Box>
         </DialogContent>
         <DialogActions>
