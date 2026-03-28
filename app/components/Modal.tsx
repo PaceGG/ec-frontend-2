@@ -8,36 +8,77 @@ import {
   IconButton,
   TextField,
 } from "@mui/material";
-
-// icons
-import CloseIcon from "@mui/icons-material/Close";
-import Input from "./Input";
 import { useGameNamesForm } from "../hooks/useGameNamesForm";
-import { useInputs } from "../hooks/useInputs";
+import { InputItem, useInputs } from "../hooks/useInputs";
+import { memo, useCallback, useState } from "react";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+interface GameInputProps {
+  input: InputItem;
+  index: number;
+  updateValue: (id: number, value: string) => void;
+  removeInput: (id: number) => void;
+}
+
+const GameInput = memo(
+  function GameInput({
+    input,
+    index,
+    updateValue,
+    removeInput,
+  }: GameInputProps) {
+    const [localValue, setLocalValue] = useState(input.value);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setLocalValue(e.target.value);
+      updateValue(input.id, e.target.value);
+    };
+
+    return (
+      <Box>
+        <TextField
+          value={localValue}
+          label={`Game ${index + 1}`}
+          name="Game name"
+          required
+          onChange={handleChange}
+        />
+        <Button onClick={() => removeInput(input.id)} color="error">
+          del
+        </Button>
+      </Box>
+    );
+  },
+  (prev, next) => prev.input.value === next.input.value,
+);
+
 export default function Modal({ isOpen, onClose }: ModalProps) {
   const inputs = useInputs();
   const gameNames = useGameNamesForm(inputs.inputs, inputs.reset);
 
-  const handleClose = () => {
+  const updateValue = useCallback(inputs.updateValue, [inputs.updateValue]);
+  const removeInput = useCallback(inputs.removeInput, [inputs.removeInput]);
+  const addInput = useCallback(inputs.addInput, [inputs.addInput]);
+
+  const handleClose = useCallback(() => {
     gameNames.reset();
     onClose();
-  };
+  }, [gameNames, onClose]);
 
-  const handleConfirm = () => {
+  const handleConfirm = useCallback(() => {
     gameNames.submit();
     onClose();
-  };
+  }, [gameNames, onClose]);
 
   return (
     <Dialog open={isOpen} onClose={onClose}>
       <DialogTitle>
-        Add Game{" "}
+        Add Game
         <IconButton onClick={onClose}>
           <CloseIcon />
         </IconButton>
@@ -58,21 +99,17 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
               onChange={(e) => gameNames.setMainGameName(e.target.value)}
             />
             {inputs.inputs.map((input, index) => (
-              <Box>
-                <TextField
-                  key={`game-name-${input.id}`}
-                  value={input.value}
-                  label={`Game ${index + 1}`}
-                  name="Game name"
-                  required
-                  onChange={(e) => inputs.updateValue(input.id, e.target.value)}
-                />
-                <Button onClick={() => inputs.removeInput(input.id)}>
-                  del
-                </Button>
-              </Box>
+              <GameInput
+                key={input.id}
+                input={input}
+                index={index}
+                updateValue={updateValue}
+                removeInput={removeInput}
+              />
             ))}
-            <Button onClick={inputs.addInput}>+ ADD GAME</Button>
+            <Button variant="outlined" onClick={addInput}>
+              + ADD GAME
+            </Button>
           </Box>
         </DialogContent>
         <DialogActions>
