@@ -1,9 +1,5 @@
 import { useState } from "react";
-
-interface InputItem {
-  id: number;
-  value: string;
-}
+import { InputItem } from "./useInputs";
 
 export function useGameNamesForm(inputs: InputItem[], resetInputs: () => void) {
   const [mainGameName, setMainGameName] = useState("");
