@@ -67,13 +67,17 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
   const addInput = useCallback(inputs.addInput, [inputs.addInput]);
 
   const handleClose = useCallback(() => {
-    gameNames.reset();
     onClose();
+    setTimeout(() => {
+      gameNames.reset();
+    }, 200);
   }, [gameNames, onClose]);
 
   const handleConfirm = useCallback(() => {
-    gameNames.submit();
     onClose();
+    setTimeout(() => {
+      gameNames.submit();
+    }, 200);
   }, [gameNames, onClose]);
 
   const handleMainGameKeyDown = (e: React.KeyboardEvent) => {
