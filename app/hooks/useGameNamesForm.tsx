@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { InputItem } from "./useInputs";
+import ec from "../api";
 
 export function useGameNamesForm(inputs: InputItem[], resetInputs: () => void) {
   const [mainGameName, setMainGameName] = useState("");
@@ -11,10 +12,12 @@ export function useGameNamesForm(inputs: InputItem[], resetInputs: () => void) {
 
   const submit = () => {
     if (!inputs.length) {
-      console.log(`Post Game: ${mainGameName}`);
+      ec.postGame(mainGameName);
     } else {
-      console.log(`Post Game Series: ${mainGameName}`);
-      console.log(inputs.map((i) => i.value));
+      ec.postGames(
+        mainGameName,
+        inputs.map((i) => i.value),
+      );
     }
 
     reset();
